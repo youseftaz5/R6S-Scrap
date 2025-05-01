@@ -21,7 +21,7 @@ def create_D_A_L_folders(base_path='r6s_container'):
 with sync_playwright() as p:
     browser = p.firefox.launch(headless=False)
     page = browser.new_page()
-    page.goto('https://liquipedia.net/rainbowsix/Portal:Operators')
+    page.goto('https://liquipedia.net/rainbowsix/Portal:Operators',wait_until='networkidle')
     page.wait_for_load_state('load')
 
     OperatorsInformation = {
@@ -40,7 +40,8 @@ with sync_playwright() as p:
         'Weight' :         [],
         'Armor/Health' :   [],
         'Speed':           [],
-        'Difficulty':      []
+        'Difficulty':      [],
+        'Biography' :[]
 
     }
 
@@ -76,6 +77,11 @@ with sync_playwright() as p:
         'secondary': '#mw-content-text > div > div:nth-child(10) div ',
         'equipment' : '#mw-content-text > div > div:nth-child(12) div', 
     }
+
+    fandom_selectors = {
+
+        'Biography_selector' : '.quote-text'
+    }
     
     for side, selector in links_selectors.items():
         links = page.locator(selector).all()
@@ -102,7 +108,6 @@ with sync_playwright() as p:
                 DOB = strippedText[:3]
                 city = strippedText[3:-1]
                 Age = strippedText[-1]
-                print(DOB, city, Age)
             else:
                 DOB, city, Age = "N/A", "N/A", "N/A"
 
@@ -110,7 +115,6 @@ with sync_playwright() as p:
             real_name_selector = OperatorsInformation_selectors['real name']
             if page.locator(real_name_selector).count() > 0:
                 real_name = page.locator(real_name_selector).inner_text()
-                print(real_name)
             else:
                 real_name = "N/A"
 
@@ -118,14 +122,12 @@ with sync_playwright() as p:
             operator_selector = OperatorsInformation_selectors['operator']
             if page.locator(operator_selector).count() > 0:
                 Operator = page.locator(operator_selector).get_attribute('title')
-                print(Operator)
             else:
                 Operator = "N/A"
 
             teamselector = OperatorsInformation_selectors['team']
             if page.locator(teamselector).count() > 0:
                 team = page.locator(teamselector).inner_text()
-                print(team)
             else:
                 team = "N/A"
 
@@ -133,7 +135,6 @@ with sync_playwright() as p:
             operationRole = OperatorsInformation_selectors['OperationRole']
             if page.locator(operationRole).count() > 0:
                 operationrole = page.locator(operationRole).all_inner_texts()
-                print(operationrole)
             else:
                 operationrole = 'N/A'
 
@@ -188,6 +189,26 @@ with sync_playwright() as p:
             #     print('N/A')
 
 
+
+
+
+            # page.go_back()
+
+            # page.goto(f'https://rainbowsix.fandom.com/wiki/{Operator}',timeout=5000)
+            # page.wait_for_load_state('domcontentloaded')
+            biography = 'N/A'
+            # page.wait_for_load_state('domcontentloaded')
+            bio_locator = page.locator(fandom_selectors['Biography_selector'])
+            background_locator = page.locator('.Background')
+            print(bio_locator)
+            if bio_locator.count() > 0 :
+                biography = bio_locator.first.inner_text()
+                print(biography)
+            else:
+                print('n/a')
+            
+            page.go_back()
+
             OperatorsInformation['operator'].append(Operator)
             OperatorsInformation['real_name'].append(real_name)
             OperatorsInformation['side'].append(side.replace('Links', ''))  # Set side (Defender, Attacker, Legacy)
@@ -204,9 +225,7 @@ with sync_playwright() as p:
             OperatorsInformation['Armor/Health'].append(armor)
             OperatorsInformation['Speed'].append(speeds)
             OperatorsInformation['Difficulty'].append(difficulty)
-
-
-            page.go_back()
+            OperatorsInformation['Biography'].append(biography)
 
 
     df = pd.DataFrame(data=OperatorsInformation)
