@@ -271,6 +271,6 @@ with sync_playwright() as p:
 
     df = pd.DataFrame(data=OperatorsInformation)
     print(df)
-    df.to_csv('main_r6s_v2.csv', index=False)
+    df.to_excel('Dataset/main_r6s_v2_.xlsx',sheet_name = 'Main' ,index=False)
 
     page.close()

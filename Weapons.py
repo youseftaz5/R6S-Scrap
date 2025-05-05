@@ -123,6 +123,6 @@ with sync_playwright() as p:
     
         df = pd.read_excel('main_r6s_v2_.xlsx')
         df = pd.DataFrame(WeaponsData)
-        df.to_excel('main_r6s_v2_.xlsx', sheet_name='Weapons', index=False)
+        df.to_excel('Dataset/main_r6s_v2_.xlsx', sheet_name='Weapons', index=False)
     page.close()
 
