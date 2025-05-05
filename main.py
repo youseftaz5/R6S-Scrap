@@ -19,68 +19,80 @@ def create_D_A_L_folders(base_path='r6s_container'):
             os.makedirs(full_path)
 
 with sync_playwright() as p:
-    browser = p.firefox.launch(headless=False)
+    browser = p.firefox.launch(headless=True)
     page = browser.new_page()
     page.goto('https://liquipedia.net/rainbowsix/Portal:Operators',wait_until='networkidle')
     page.wait_for_load_state('load')
 
     OperatorsInformation = {
-        'operator' :       [],
-        'real_name':       [],
-        'side'     :       [],
-        'bornDate' :       [],
-        'Country'  :       [],
-        'City'     :       [],
-        'Age'      :       [],
-        'team'     :       [],
-        'operation role':  [],
-        'team_rainbow' :   [],
-        'Affiliation':     [],
-        'Height':          [],
-        'Weight' :         [],
-        'Armor/Health' :   [],
-        'Speed':           [],
-        'Difficulty':      [],
-        'Biography' :[]
-
+        'operator'          :[ ],
+        'real_name'         :[ ],
+        'side'              :[ ],
+        'bornDate'          :[ ],
+        'Country'           :[ ],
+        'City'              :[ ],
+        'Age'               :[ ],
+        'team'              :[ ],
+        'operation role'    :[ ],
+        'team_rainbow'      :[ ],
+        'Affiliation'       :[ ],
+        'Height'            :[ ],
+        'Weight'            :[ ],
+        'Armor/Health'      :[ ],
+        'Speed'             :[ ],
+        'Difficulty'        :[ ],
+        'Biography'         :[ ],
+        'Primary_1'         :[ ],
+        'Type_1'            :[ ],
+        'Primary_2'         :[ ], 
+        'Type_2'            :[ ],
+        'Secondary_1'       :[ ],
+        'Type_3'            :[ ],
+        'Secondary_2'       :[ ],
+        'Type_4'            :[ ],
+        'Gadget'            :[ ],
+        'Unique_ability'    :[ ],
+        
     }
 
     create_r6s_files()
     create_D_A_L_folders()
 
     links_selectors = {
-        'DefenderLinks': '#mw-content-text > div > b:nth-child(4) > ul > li > div > div.thumb > div > a', 
-        'AttackersLinks': '#mw-content-text > div > b:nth-child(2) > ul > li > div > div.thumb > div > a'
+        'DefenderLinks'     : '#mw-content-text > div > b:nth-child(4) > ul > li > div > div.thumb > div > a', 
+        'AttackersLinks'    : '#mw-content-text > div > b:nth-child(2) > ul > li > div > div.thumb > div > a'
            
         }
 
     OperatorsInformation_selectors = {
-        'operator' : '#mw-content-text > div > div.fo-nttax-infobox-wrapper.infobox-rainbowsix > div.fo-nttax-infobox > div:nth-child(1) > div > a',
-        'real name': ".infobox-description:text('Real Name:') + div",
-        'team'     : '.infobox-description:text("Team:") + div',
-        'born'     : '.infobox-description:text("Born:") + div',
-        'OperationRole' : '.infobox-description:text("Operator Role:") + div a',
-        'flag' : '.flag > a',
-        'Team_Rainbow' :  '.infobox-description:text("Team Rainbow:") + div a',
-        'Affiliation' : '.infobox-description:text("Affiliation:") + div a',
-        'Height': '.infobox-description:text("Height:") + div',
-        'Weight': '.infobox-description:text("Weight:") + div',
-        'Armor/Health' : '.infobox-description:text("Armor/Health:") + div', 
-        'Speed' : '.infobox-description:text("Speed:") + div',
-        'Difficulty' : '.infobox-description:text("Difficulty:") + div '
+        'operator'          : '#mw-content-text > div > div.fo-nttax-infobox-wrapper.infobox-rainbowsix > div.fo-nttax-infobox > div:nth-child(1) > div > a',
+        'real name'         : ".infobox-description:text('Real Name:') + div",
+        'team'              : '.infobox-description:text("Team:") + div',
+        'born'              : '.infobox-description:text("Born:") + div',
+        'OperationRole'     : '.infobox-description:text("Operator Role:") + div a',
+        'flag'              : '.flag > a',
+        'Team_Rainbow'      :  '.infobox-description:text("Team Rainbow:") + div a',
+        'Affiliation'       : '.infobox-description:text("Affiliation:") + div a',
+        'Height'            : '.infobox-description:text("Height:") + div',
+        'Weight'            : '.infobox-description:text("Weight:") + div',
+        'Armor/Health'      : '.infobox-description:text("Armor/Health:") + div', 
+        'Speed'             : '.infobox-description:text("Speed:") + div',
+        'Difficulty'           : '.infobox-description:text("Difficulty:") + div '
 
     }
 
     WeaponsInformation_selectors = {
 
-        'primary': '#mw-content-text > div > div:nth-child(6) > div > div > div ',
-        'secondary': '#mw-content-text > div > div:nth-child(10) div ',
-        'equipment' : '#mw-content-text > div > div:nth-child(12) div', 
+        'primary'          : '.operator__loadout__category:nth-child(2) > div',
+        'secondary'        : '.operator__loadout__category:nth-child(3) > div',
+        'gadget'           : '.operator__loadout__category:nth-child(4) > div',
+        'unique_Ability'   : '.operator__loadout__category:nth-child(5) > div'
+
     }
 
-    fandom_selectors = {
+    Liquipedia_selectors = {
 
-        'Biography_selector' : '.quote-text'
+        'Biography_selector' : '.operator__biography__description'
     }
     
     for side, selector in links_selectors.items():
@@ -89,12 +101,11 @@ with sync_playwright() as p:
         
         for link in links:
             link.click()
-            page.wait_for_load_state('networkidle')
+            page.wait_for_load_state('load')
             
             countryextract = OperatorsInformation_selectors['flag']
             if page.locator(countryextract).count() > 0:
                 country = page.locator(countryextract).first.get_attribute('title')
-                print(country)
             else:
                 country = 'N/A'
 
@@ -102,7 +113,7 @@ with sync_playwright() as p:
             born = OperatorsInformation_selectors['born']
             if page.locator(born).count() > 0:
                 born = page.locator(born).all_text_contents()
-                print(born)
+  
                 cleanText = re.sub(r"[(),]|age|\xa0", "", born[0]).strip()
                 strippedText = cleanText.strip('\n').split()
                 DOB = strippedText[:3]
@@ -181,38 +192,59 @@ with sync_playwright() as p:
                 difficulty = 'N/A'
 
 
-            # pr_weapons = WeaponsInformation_selectors['primary']
-            # if page.locator(pr_weapons).count() > 0:
-            #     AllPrWeapons = page.locator(pr_weapons).all_inner_texts()
-            #     print(AllPrWeapons)
-            # else:
-            #     print('N/A')
 
-
-
-
-
-            # page.go_back()
-
-            # page.goto(f'https://rainbowsix.fandom.com/wiki/{Operator}',timeout=5000)
-            # page.wait_for_load_state('domcontentloaded')
             biography = 'N/A'
             # page.wait_for_load_state('domcontentloaded')
-            bio_locator = page.locator(fandom_selectors['Biography_selector'])
+            bio_locator = page.locator(Liquipedia_selectors['Biography_selector'])
             background_locator = page.locator('.Background')
-            print(bio_locator)
+
             if bio_locator.count() > 0 :
                 biography = bio_locator.first.inner_text()
-                print(biography)
             else:
-                print('n/a')
+                biography = 'N/A'
             
-            page.go_back()
+            
+            page.goto(f'https://www.ubisoft.com/en-gb/game/rainbow-six/siege/game-info/operators/{Operator.lower()}')
+            page.wait_for_timeout(4000)
+            primary_1 = primary_2 = type_1 = type_2 = 'N/A'
+            
+            #Primary Weabons 
+            if page.locator(f"{WeaponsInformation_selectors['primary']} > div").count() > 0:
+                p_names = page.locator('.operator__loadout__category:nth-child(2) > div > div > p:nth-child(1)')
+                p_types = page.locator('.operator__loadout__category:nth-child(2) > div > div > p:nth-child(3)')
+                if p_names.count() > 0:
+                    primary_1 = p_names.nth(0).inner_text()
+                    type_1 = p_types.nth(0).inner_text()
+                if p_names.count() > 1:
+                    primary_2 = p_names.nth(1).inner_text()
+                    type_2 = p_types.nth(1).inner_text()
+            page.wait_for_timeout(2000)
+
+            #Secondary Weabons
+            secondary_1 = secondary_2 = type_3 = type_4 = 'N/A'
+            if page.locator(f"{WeaponsInformation_selectors['secondary']} > div").count() > 0:
+                s_names = page.locator('.operator__loadout__category:nth-child(3) > div > div > p:nth-child(1)')
+                s_types = page.locator('.operator__loadout__category:nth-child(3) > div > div > p:nth-child(3)')
+                if s_names.count() > 0:
+                    secondary_1 = s_names.nth(0).inner_text()
+                    type_3 = s_types.nth(0).inner_text()
+                if s_names.count() > 1:
+                    secondary_2 = s_names.nth(1).inner_text()
+                    type_4 = s_types.nth(1).inner_text()
+            page.wait_for_timeout(2000)
+            
+            gadget_name = page.locator('.operator__loadout__category:nth-child(4) > div > div > p:nth-child(1)').all_inner_texts() if page.locator(WeaponsInformation_selectors['gadget']).count() > 0 else 'N/A'
+            unique_ability = page.locator('.operator__loadout__category:nth-child(5) > div > div > p:nth-child(1)').inner_text() if page.locator(WeaponsInformation_selectors['unique_Ability']).count() > 0 else 'N/A'
+
+
+            print(primary_1,primary_2,secondary_1,secondary_2)
+            page.goto('https://liquipedia.net/rainbowsix/Portal:Operators',wait_until='load')
+
+
 
             OperatorsInformation['operator'].append(Operator)
             OperatorsInformation['real_name'].append(real_name)
-            OperatorsInformation['side'].append(side.replace('Links', ''))  # Set side (Defender, Attacker, Legacy)
-            OperatorsInformation['team'].append(team)
+            OperatorsInformation['side'].append(side.replace('Links', ''))
             OperatorsInformation['bornDate'].append(DOB)
             OperatorsInformation['City'].append(city)
             OperatorsInformation['Age'].append(Age)
@@ -226,11 +258,19 @@ with sync_playwright() as p:
             OperatorsInformation['Speed'].append(speeds)
             OperatorsInformation['Difficulty'].append(difficulty)
             OperatorsInformation['Biography'].append(biography)
-
+            OperatorsInformation['Primary_1'].append(primary_1)
+            OperatorsInformation['Type_1'].append(type_1)
+            OperatorsInformation['Primary_2'].append(primary_2)
+            OperatorsInformation['Type_2'].append(type_2)
+            OperatorsInformation['Secondary_1'].append(secondary_1)
+            OperatorsInformation['Type_3'].append(type_3)
+            OperatorsInformation['Secondary_2'].append(secondary_2)
+            OperatorsInformation['Type_4'].append(type_4)
+            OperatorsInformation['Gadget'].append(gadget_name)
+            OperatorsInformation['Unique_ability'].append(unique_ability)
 
     df = pd.DataFrame(data=OperatorsInformation)
     print(df)
-    df.to_csv('main_r6s.csv', index=False)
-
+    df.to_csv('main_r6s_v2.csv', index=False)
 
     page.close()
